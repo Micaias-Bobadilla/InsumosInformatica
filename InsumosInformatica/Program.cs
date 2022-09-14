@@ -10,6 +10,7 @@ namespace InsumosInformatica
     {
         static void Main(string[] args)
         {
+
         }
     }
 }
