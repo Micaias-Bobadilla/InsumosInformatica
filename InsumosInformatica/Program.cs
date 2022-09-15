@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Data.SqlTypes;
 using System.Diagnostics;
 using System.Linq;
-using System.Security.Principal;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -68,23 +67,6 @@ namespace InsumosInformatica
         {
             Console.Clear();
             Console.WriteLine("Agregado Insumos");
-            //variables temporales para agregar a la lista
-            string nombre;
-            int cantidad;
-            int precio;
-
-            Console.WriteLine("Nombre del insumo:");
-            nombre= VerificarEntrada( Console.ReadLine());
-
-            Console.WriteLine("Cantidad");
-            cantidad = VerificarEntradaNumero(Console.ReadLine());
-
-            Console.WriteLine("Precio:");
-            precio= VerificarEntradaNumero(Console.ReadLine());
-
-            //agregando a la lista
-            InsumosINformaticos.Add(new Insumos(nombre, cantidad, precio));
-            Console.WriteLine("Insumos agregados correctamente");
             Console.ReadKey();
             
         }
@@ -103,67 +85,5 @@ namespace InsumosInformatica
             Console.WriteLine("Eliminando Insumos");
             Console.ReadKey();
         }
-
-        //Verifica la entrada del nombre del insumo
-        static string VerificarEntrada(string entrada)
-        {
-            bool verificado = false;
-
-            do
-            {
-                foreach (Insumos item in InsumosINformaticos)
-                {
-                    if ( item.NombreInsumo.ToLower() == entrada.ToLower() )
-                    {
-                        verificado = false;
-                        Console.WriteLine("Nombre insumo ya Existente, ingrese otro");
-                        entrada = Console.ReadLine();
-                        break;
-
-                    }else if(entrada == "")
-                    {
-                        verificado = false;
-                        Console.WriteLine("No puede dejar vacio");
-                        entrada = Console.ReadLine();
-                        break;
-                    }
-                    else
-                    {
-                        verificado = true; 
-                    }
-                }
-            } while (!verificado);
-
-            return entrada;
-        }
-        static int VerificarEntradaNumero(string numero)
-        {
-            bool ingresoCorrecto;
-            int numeroCorrecto = 0; ;
-            do
-	        {
-                try 
-	            {
-                    numeroCorrecto = Convert.ToInt32(numero);
-                    ingresoCorrecto=true;  
-                    if (numero == "" || numero == "0")
-                    {
-                        Console.WriteLine("No puede dejar vacio o en 0");
-                        ingresoCorrecto=false;
-                    }
-	            }
-	            catch (FormatException)
-	            {
-                    Console.WriteLine("Ingrese un valor numerico");
-                    numero = Console.ReadLine();
-                    ingresoCorrecto =false;
-	            }
-                
-
-	        } while (!ingresoCorrecto);
-
-            return numeroCorrecto;
-        }
-
     }
 }

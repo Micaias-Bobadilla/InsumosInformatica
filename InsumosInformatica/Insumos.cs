@@ -37,7 +37,7 @@ namespace InsumosInformatica
         }
         public override string ToString()
         {
-            return String.Format("ID {0}\t-Descripcion {1}\t-TotalExistente: {2}\t-Costo Unitario: {3} Gs.\t-Costo Total {4} Gs.",
+            return String.Format("ID {0}\t-Descripcion {1}\t-TotalExistente: {2}\t-Costo Unitario: {3}\t-Costo Total {4}",
                 this.IdInsumo, this.NombreInsumo, this.CantidadInsumo, this.CostoInsumo, (this.CostoInsumo * this.CantidadInsumo));
         }
     }
