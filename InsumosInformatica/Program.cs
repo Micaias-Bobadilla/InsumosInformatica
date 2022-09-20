@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Data.SqlTypes;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Security.Principal;
 using System.Text;
@@ -40,9 +42,59 @@ namespace InsumosInformatica
                 }
 
             } while ( teclaElegida.Key != ConsoleKey.Escape);
-            
+
+                       
+            GuardarArticulosEnTxt();
             
         }
+
+        static void GuardarArticulosEnTxt()
+        {
+            string InsumosPorLinea;
+
+           
+                foreach (Insumos insumo in InsumosINformaticos)
+                {
+
+                InsumosPorLinea = $" {insumo.IdInsumo} {insumo.NombreInsumo} " +
+                                    $"{insumo.CantidadInsumo} {insumo.CostoInsumo}";
+                if (!VerificarExistenciaLinea(InsumosPorLinea))
+                    {
+
+                        using (StreamWriter archivo = new StreamWriter(@"C:\Users\alfredb\source\repos\InsumosInformatica\database.txt", true))
+                        {
+                            archivo.WriteLine(InsumosPorLinea);
+                        }
+                    }
+                else
+                    {
+                        continue;
+                    }
+                    
+                }
+            
+                    
+        }
+
+        static bool VerificarExistenciaLinea(string insumo)
+        {
+            string lineas;
+
+            try
+            {
+                lineas = File.ReadAllText(@"C:\Users\alfredb\source\repos\InsumosInformatica\database.txt");
+
+
+            }
+            catch (FileNotFoundException)
+            {
+                 return false;
+            }
+            
+            return lineas.Contains(insumo);
+           
+        }
+
 
         static void MenuNav()
         {
@@ -68,11 +120,12 @@ namespace InsumosInformatica
         {
             Console.Clear();
             Console.WriteLine("Agregado Insumos");
+            
             //variables temporales para agregar a la lista
             string nombre;
             int cantidad;
             int precio;
-
+       
             Console.WriteLine("Nombre del insumo:");
             nombre= VerificarEntrada( Console.ReadLine());
 
@@ -86,6 +139,8 @@ namespace InsumosInformatica
             InsumosINformaticos.Add(new Insumos(nombre, cantidad, precio));
             Console.WriteLine("Insumos agregados correctamente");
             Console.ReadKey();
+
+   
             
         }
 
