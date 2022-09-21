@@ -8,7 +8,9 @@ namespace InsumosInformatica
 {
     internal class Program
     {
+        //Una lista de variable global para todo el namespace
         static List<Insumos> InsumosINformaticos = new List<Insumos> {  };
+        //Para evitar la exepcion donde no se puede escribir en el disco se optiene de la clase system.environment
         static string direccionArchivo = Environment.GetFolderPath(Environment.SpecialFolder.Desktop) + "\\database.txt";
         static void Main(string[] args)
         {
