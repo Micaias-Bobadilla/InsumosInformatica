@@ -30,13 +30,9 @@ namespace InsumosInformatica
                 {
                     AgregarInsumos();
                 }
-                else if (teclaElegida.Key == ConsoleKey.D3)
+                 else if (teclaElegida.Key == ConsoleKey.D3)
                 {
-                    EntregarInsumos();
-                }
-                else if (teclaElegida.Key == ConsoleKey.D4)
-                {
-                    EliminarInsumos();
+                    EliminarInsumos();                    
                 }
                 else
                 {
@@ -48,7 +44,7 @@ namespace InsumosInformatica
             GuardarArticulosEnTxt();
 
         }
-
+        //guarda todos los cambios hechos, si se agrego
         static void GuardarArticulosEnTxt()
         {
             string InsumosPorLinea;
@@ -72,16 +68,18 @@ namespace InsumosInformatica
             }
         }
 
-        static void ActualizarArticulosEnTxt()
+        static void ActualizarArticulosEnTxtLista()
         {
             string InsumosEnTexto="";
+            int nuevoId = 0;
 
             foreach (Insumos insumo in InsumosINformaticos)
             {
+                InsumosINformaticos[nuevoId].IdInsumo = nuevoId+1;//actualizo la lista tambien
 
                 InsumosEnTexto += $"{insumo.IdInsumo}#{insumo.NombreInsumo}#" +
                                     $"{insumo.CantidadInsumo}#{insumo.CostoInsumo}\n";
-
+                nuevoId++;
             }
 
             File.WriteAllText(@"C:\ESD\database.txt", InsumosEnTexto);
@@ -119,14 +117,9 @@ namespace InsumosInformatica
                         noVerificado = false;   
                         return entrada;
                     }
-                    else if(insumo.IdInsumo != entrada)
-                    {
-                        noVerificado = true;
-                        Console.WriteLine("Dicho id no existe, ingrese otro");
-                        entrada = Convert.ToInt32(Console.ReadLine());
-                        break;
-                    }
                 }
+                Console.WriteLine("Dicho id no existe, ingrese otro");
+                entrada = Convert.ToInt32(Console.ReadLine());
 
             } while (noVerificado);
 
@@ -138,7 +131,7 @@ namespace InsumosInformatica
             Console.Clear();
             Console.WriteLine("\t\t\t###Sistema de Insumos Informatico###\n");
             Console.WriteLine("Seleccione la opcion que desea realizar");
-            Console.WriteLine("1 - Listar Insumos\n\n2 - Agregar Insumos\n\n3 - Entregar Insumos\n\n4 - Eliminar insumos\n\n");
+            Console.WriteLine("1 - Listar Insumos\n\n2 - Agregar Insumos\n\n3 - Eliminar insumos\n\n");
             Console.WriteLine("Para salir presiona 'ESC'");
         }
         static void ListarInsumos()
@@ -221,7 +214,7 @@ namespace InsumosInformatica
                         indexRecorrido++;
                     }
                     //sobreescribe el archivo
-                    ActualizarArticulosEnTxt();
+                    ActualizarArticulosEnTxtLista();
                     Console.WriteLine("\nInsumos eliminado correctamente");
                     Console.ReadKey();
                     volverElegir = false;
@@ -301,6 +294,12 @@ namespace InsumosInformatica
                     Console.WriteLine("Ingrese un valor numerico");
                     numero = Console.ReadLine();
                     ingresoCorrecto = false;
+                }
+                catch (OverflowException)
+                {
+                    Console.WriteLine("Numero muy grande");
+                    numero = Console.ReadLine();
+                    ingresoCorrecto=false;
                 }
 
 
