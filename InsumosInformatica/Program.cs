@@ -9,9 +9,10 @@ namespace InsumosInformatica
     internal class Program
     {
         static List<Insumos> InsumosINformaticos = new List<Insumos> {  };
+        static string direccionArchivo = Environment.GetFolderPath(Environment.SpecialFolder.Desktop) + "\\database.txt";
         static void Main(string[] args)
         {
-            if(File.Exists(@"C:\ESD\database.txt"))
+            if(File.Exists(direccionArchivo))
             {
                 CargarDeArchivoALista();
             }
@@ -47,6 +48,8 @@ namespace InsumosInformatica
         //guarda todos los cambios hechos, si se agrego
         static void GuardarArticulosEnTxt()
         {
+
+            //Environment.GetFolderPath(Environment.SpecialFolder.Desktop) + database.txt
             string InsumosPorLinea;
             foreach (Insumos insumo in InsumosINformaticos)
             {
@@ -56,7 +59,7 @@ namespace InsumosInformatica
                 if (!VerificarExistenciaLinea(InsumosPorLinea))
                 {
 
-                    using (StreamWriter archivo = new StreamWriter(@"C:\ESD\database.txt", true))
+                    using (StreamWriter archivo = new StreamWriter(direccionArchivo, true))
                     {
                         archivo.WriteLine(InsumosPorLinea);
                     }
@@ -75,14 +78,14 @@ namespace InsumosInformatica
 
             foreach (Insumos insumo in InsumosINformaticos)
             {
-                InsumosINformaticos[nuevoId].IdInsumo = nuevoId+1;//actualizo la lista tambien
+                InsumosINformaticos[nuevoId].IdInsumo = nuevoId+1;//actualizo la lista tambien para que el id sea dinamico
 
                 InsumosEnTexto += $"{insumo.IdInsumo}#{insumo.NombreInsumo}#" +
                                     $"{insumo.CantidadInsumo}#{insumo.CostoInsumo}\n";
                 nuevoId++;
             }
 
-            File.WriteAllText(@"C:\ESD\database.txt", InsumosEnTexto);
+            File.WriteAllText(direccionArchivo, InsumosEnTexto);
 
         }
         //verifica si existe el insumo en una de las lineas del archivo txt, para no repetir la escritura del insumo
@@ -176,13 +179,13 @@ namespace InsumosInformatica
             Console.ReadKey();
         }
 
-        static void EntregarInsumos()
+       /* static void EntregarInsumos()
         {
             Console.Clear();
             Console.WriteLine("Entregado Insumos");
             Console.ReadKey();
 
-        }
+        }*/
 
         static void EliminarInsumos()
         {
@@ -311,7 +314,7 @@ namespace InsumosInformatica
         //si existe un archivo ya creado, carga en la lista
         static void CargarDeArchivoALista()
         {
-            string[] lineas = File.ReadAllLines(@"C:\ESD\database.txt");//lee todas las lineas del texto entero
+            string[] lineas = File.ReadAllLines(direccionArchivo);//lee todas las lineas del texto entero
             string[] lineasSeparadas;//Voy a separar cada linea en un array de string
             Insumos auxiliar;//variable auxiliar para instanciar dentro de la lista del objeto Insumos
 
