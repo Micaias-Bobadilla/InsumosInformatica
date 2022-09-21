@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.Remoting.Contexts;
+using System.Text;
 
 namespace InsumosInformatica
 {
@@ -10,8 +11,10 @@ namespace InsumosInformatica
         static List<Insumos> InsumosINformaticos = new List<Insumos> {  };
         static void Main(string[] args)
         {
-
-            CargarDeArchivoALista();
+            if(File.Exists(@"C:\ESD\database.txt"))
+            {
+                CargarDeArchivoALista();
+            }
 
             ConsoleKeyInfo teclaElegida;
             do
@@ -21,6 +24,7 @@ namespace InsumosInformatica
                 if (teclaElegida.Key == ConsoleKey.D1)
                 {
                     ListarInsumos();
+                    Console.ReadKey();
                 }
                 else if (teclaElegida.Key == ConsoleKey.D2)
                 {
@@ -67,6 +71,22 @@ namespace InsumosInformatica
                 }
             }
         }
+
+        static void ActualizarArticulosEnTxt()
+        {
+            string InsumosEnTexto="";
+
+            foreach (Insumos insumo in InsumosINformaticos)
+            {
+
+                InsumosEnTexto += $"{insumo.IdInsumo}#{insumo.NombreInsumo}#" +
+                                    $"{insumo.CantidadInsumo}#{insumo.CostoInsumo}\n";
+
+            }
+
+            File.WriteAllText(@"C:\ESD\database.txt", InsumosEnTexto);
+
+        }
         //verifica si existe el insumo en una de las lineas del archivo txt, para no repetir la escritura del insumo
         static bool VerificarExistenciaLinea(string insumo)
         {
@@ -86,8 +106,33 @@ namespace InsumosInformatica
             return lineas.Contains(insumo);
 
         }
+        //Funcion que verifica si existe el ID
+        static int VerificarExistencia(int entrada)
+        {
+            bool noVerificado = true;
+            do
+            {
+                foreach (Insumos insumo in InsumosINformaticos)
+                {
+                    if (insumo.IdInsumo == entrada)
+                    {
+                        noVerificado = false;   
+                        return entrada;
+                    }
+                    else if(insumo.IdInsumo != entrada)
+                    {
+                        noVerificado = true;
+                        Console.WriteLine("Dicho id no existe, ingrese otro");
+                        entrada = Convert.ToInt32(Console.ReadLine());
+                        break;
+                    }
+                }
 
+            } while (noVerificado);
 
+            return entrada;
+        }
+        //despliega el menu
         static void MenuNav()
         {
             Console.Clear();
@@ -96,17 +141,21 @@ namespace InsumosInformatica
             Console.WriteLine("1 - Listar Insumos\n\n2 - Agregar Insumos\n\n3 - Entregar Insumos\n\n4 - Eliminar insumos\n\n");
             Console.WriteLine("Para salir presiona 'ESC'");
         }
-
         static void ListarInsumos()
         {
             Console.Clear();
             Console.WriteLine("Listando Insumos");
-            foreach (Insumos item in InsumosINformaticos)
+            if (InsumosINformaticos.Count == 0)
             {
-                Console.WriteLine(item.ToString());
+                Console.WriteLine("Base de datos vacio");
             }
-
-            Console.ReadKey();
+            else
+            {
+                foreach (Insumos item in InsumosINformaticos)
+                {
+                    Console.WriteLine(item.ToString());
+                }
+            }
         }
         static void AgregarInsumos()
         {
@@ -153,35 +202,38 @@ namespace InsumosInformatica
                 ListarInsumos();
                 int idEliminar;
                 Console.WriteLine("Seleccione el insumo a eliminar por el ID");
-                idEliminar = VerificarEntradaNumero(Console.ReadLine());
+                idEliminar =  VerificarExistencia(VerificarEntradaNumero(Console.ReadLine()) );
                 //pregunta si esta seguro que desea eliminar
                 Console.Clear();
-                Console.WriteLine("\nEstas seguro que desea eliminar: 'S' si 'N' seleccionar otro y 'ESC' para salir \n");
-                InsumosINformaticos.ToString();
+                Console.WriteLine("\nEstas seguro que desea eliminar: 'S' si 'N' seleccionar otro y 'ESC' para salir \n"); 
                 if (Console.ReadKey().Key == ConsoleKey.S)
                 {
+                    int indexRecorrido = 0;
                     //recorrido de eliminacion
                     foreach (Insumos insumo in InsumosINformaticos)
                     {
+                        //ciclo de eliminacion
                         if (insumo.IdInsumo == idEliminar)
                         {
-                            InsumosINformaticos.RemoveAt(idEliminar-1);
+                            InsumosINformaticos.RemoveAt(indexRecorrido);
                             break;
                         }
+                        indexRecorrido++;
                     }
-
+                    //sobreescribe el archivo
+                    ActualizarArticulosEnTxt();
                     Console.WriteLine("\nInsumos eliminado correctamente");
                     Console.ReadKey();
                     volverElegir = false;
                 }
                 else if (Console.ReadKey().Key == ConsoleKey.N)
                 {
+                    
                     volverElegir = true;
                 }else if (Console.ReadKey().Key == ConsoleKey.Escape)
                 {
-                    volverElegir = false;
-                    Console.WriteLine("Volviendo al menu");
-                    Console.ReadKey();
+                   break;
+                    
                 }
 
             } while (volverElegir);
@@ -192,6 +244,12 @@ namespace InsumosInformatica
         static string VerificarEntrada(string entrada)
         {
             bool verificado = false;
+
+            //si esta vacio retornar dato no verifico porque es un string y puede cargarse cualquier valor
+            if (InsumosINformaticos.Count==0)
+            {
+                return entrada;
+            }
 
             do
             {
@@ -235,6 +293,7 @@ namespace InsumosInformatica
                     {
                         Console.WriteLine("No puede dejar vacio o en 0");
                         ingresoCorrecto = false;
+                        numero = Console.ReadLine();
                     }
                 }
                 catch (FormatException)
@@ -250,15 +309,17 @@ namespace InsumosInformatica
             return numeroCorrecto;
         }
 
+        //si existe un archivo ya creado, carga en la lista
         static void CargarDeArchivoALista()
         {
-            string[] lineas = File.ReadAllLines(@"C:\ESD\database.txt");
-            string[] lineasSeparadas;
-            Insumos auxiliar;
+            string[] lineas = File.ReadAllLines(@"C:\ESD\database.txt");//lee todas las lineas del texto entero
+            string[] lineasSeparadas;//Voy a separar cada linea en un array de string
+            Insumos auxiliar;//variable auxiliar para instanciar dentro de la lista del objeto Insumos
 
             foreach (string linea in lineas)//falta agregar a los archivos con substream
             {
               lineasSeparadas=  linea.Trim().Split('#');
+                //aprovechando de mi constructor
                 auxiliar= new Insumos(lineasSeparadas[1], Convert.ToInt32(lineasSeparadas[2]), Convert.ToInt32(lineasSeparadas[3]) );
                 InsumosINformaticos.Add(auxiliar);
             }
